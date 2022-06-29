@@ -35,7 +35,30 @@ int inference(
     int KH, int KW
 )
 {
-    /* Code Starts Here */
+    for(int n = 0; n < N; ++n) {
+        for(int h = -1 * (KH / 2); h < IH - (KH / 2); ++h) {
+            for(int w = -1 * (KW / 2); w < IW - (KW / 2); ++w) {
+   	            for(int oc = 0; oc < OC; ++oc) {
+   			        int32_t val = 0;
+
+                    int nhw = n * IH * IW * IC + h * IW * IC + w * IC;
+
+   		            for(int kw=0; kw<KW; ++kw) {
+   				        for(int kh=0; kh<KH; ++kh) {
+ 				    		for(int ic = 0; ic < IC; ++ic) {
+ 				    		    if((h+kh>=0) && (h+kh<IH) && (w+kw>=0) && (w+kw<IW)) {
+                                    val += tensorIn[n * IH*IW*IC+h * IW*IC+w * IC + kh*IW*IC + kw*IC + ic]
+                                        * kernel[oc * KH*KW*IC + kh*KW*IC + kw*IC + ic];
+                                }
+ 	                        }
+                        }
+                    }
+                    tensorOut[n * IH*IW*OC + (h+KH/2)*IW*OC + (w+KW/2)*OC + oc] = val;                    
+                }
+            }
+        }
+    }
+
 
     return 0;
     /* Code Ends Here */
